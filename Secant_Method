@@ -1,0 +1,65 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+long double f(long double x)
+{
+    long double temp;
+    temp = x*x - 4*sin(x);
+    return temp;
+}
+
+int main()
+{
+    long double x_1, x_2, e_s;
+    // Input lower bound, upper bound, and error tolerance
+    cout << "Enter the first twp guesses for secant method  and error tolerance: ";
+    cin >> x_1 >> x_2 >> e_s;
+    // Input the maximum number of iterations
+    int n;
+    cout << "Enter the maximum number of iterations: ";
+    cin >> n;
+    // n++;
+    // Define vectors to store iteration values
+    vector<long double> error(n), function(n+2) ,h(n);
+    // Vector to store consequtive values
+    vector<long double> secant(n+2);
+    // Initialize the first iteration
+    secant[0] = x_1;
+    secant[1] = x_2;
+    function[0] = f(x_1);
+    function[1] = f(x_2);
+    // Secant Iteration
+    error[0] = fabs(function[0]); // Start with a large error to enter the loop
+
+    int i = 0;
+    int count = n;
+
+    // Iterative process
+    while (i < n - 1)
+    {
+        secant[i+2] = secant[i+1] - (function[i+1] * (secant[i+1] - secant[i])/(function[i+1] - function[i]));
+        function[i+2] = f(secant[i+2]);
+        i++;
+    }
+    h[0] = NAN;
+    for(int j=1;j<n;j++)
+    {
+        h[j] = (secant[j+1] - secant[j]);
+    }
+
+    // Print the results
+    cout << "Iter\tx_k\t\tFunction Value \t\t h\n";
+    cout << fixed << setprecision(6);
+
+    for (int j = 0; j < n-1 && j<count; j++)
+    {
+        cout << j << "\t" << secant[j] << "\t"<< function[j] <<"\t\t" <<h[j] << endl;
+    }
+
+    //cout << "The estimated value of a root is :" << regula_falsi[count-1] << endl;
+    return 0;
+}
