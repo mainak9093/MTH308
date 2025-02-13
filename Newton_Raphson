@@ -1,0 +1,80 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+long double f(long double x)
+{
+    long double temp;
+    temp = x*x - 4*sin(x);
+    return temp;
+}
+
+long double f_1(long double x)
+{
+    long double temp;
+    temp = 2*x - 4*cos(x);
+    return temp;
+}
+
+int main()
+{
+    long double x, e_s;
+    // Input lower bound, upper bound, and error tolerance
+    cout << "Enter the first guess for Newton Raphson Iteration and error tolerance: ";
+    cin >> x >> e_s;
+    // Input the maximum number of iterations
+    int n;
+    cout << "Enter the maximum number of iterations: ";
+    cin >> n;
+    // n++;
+    // Define vectors to store iteration values
+    vector<long double> error(n), function(n),derivative(n);
+    // Vector to store consequtive values
+    vector<long double> newton(n);
+    // Initialize the first iteration
+    newton[0] = x ;
+    function[0] = f(x);
+    derivative[0] = f_1(x);
+    // Newton raphson Iteration
+    error[0] = fabs(function[0]); // Start with a large error to enter the loop
+
+    int i = 0;
+    int count = n;
+
+    // Iterative process
+    while (i < n - 1)
+    {
+        newton[i+1] = newton[i] - function[i]/derivative[i];
+        function[i+1] = f(newton[i+1]);
+        derivative[i+1] = f_1(newton[i+1]);
+        i++;
+    }
+    
+   // Iteration for epsilon calculation
+    for (int j = 1; j < count; j++)
+    {
+        // changed notation of error
+        error[j] = ((fabs(newton[j] - newton[j-1])) / newton[j]); // Percentage error
+        error[j] = error[j] *100;
+        if (error[j] < e_s || fabs(function[j] < 0.000001))
+        {
+            count = j + 1;
+            break;
+        }
+    }
+
+    // Print the results
+    cout << "Iter\tx_k\t\tFunction Value \t\t Derivative\n";
+    cout << fixed << setprecision(6);
+
+    for (int j = 0; j < n-1 && j<count; j++)
+    {
+        cout << j << "\t" << newton[j] << "\t"<< function[j] <<"\t"<<derivative[j] << endl;
+    }
+
+    //cout << "The estimated value of a root is :" << regula_falsi[count-1] << endl;
+    return 0;
+}
