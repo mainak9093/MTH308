@@ -1,0 +1,51 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+// Function to compute determinant using Naïve Gaussian Elimination
+double gaussianDeterminant(vector<vector<double>>& matrix, int n) {
+    double det = 1; // Initialize determinant
+
+    for (int i = 0; i < n; i++) {
+        // Partial pivoting (check for singularity)
+        if (fabs(matrix[i][i]) < 1e-9) {
+            cerr << "Matrix is singular, determinant is zero." << endl;
+            return 0;
+        }
+
+        // Convert to upper triangular form
+        for (int k = i + 1; k < n; k++) {
+            double factor = matrix[k][i] / matrix[i][i];
+            for (int j = i; j < n; j++) {
+                matrix[k][j] -= factor * matrix[i][j];
+            }
+        }
+    }
+    
+    // Compute determinant as product of diagonal elements
+    for (int i = 0; i < n; i++) {
+        det *= matrix[i][i];
+    }
+
+    return det;
+}
+
+int main() {
+    int n;
+    cout << "Enter the size of the square matrix (n): ";
+    cin >> n;
+    
+    vector<vector<double>> matrix(n, vector<double>(n));
+    cout << "Enter the matrix elements:\n";
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> matrix[i][j];
+        }
+    }
+    
+    double determinant = gaussianDeterminant(matrix, n);
+    cout << "Determinant: " << determinant << endl;
+    
+    return 0;
+}
