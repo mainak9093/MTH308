@@ -1,0 +1,78 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+long double f(long double x) {
+    long double a = 1.0;
+    long double b = -0.165;
+    long double c = 0.0;
+    long double d = 0.0003993;
+    return a * pow(x, 3) + b * pow(x, 2) + c * x + d;
+}
+
+int main() {
+    long double x_u, x_l, e_s;
+
+    // Input lower bound, upper bound, and error tolerance
+    cout << "Enter lower bound, upper bound, and error tolerance: ";
+    cin >> x_l >> x_u >> e_s;
+
+    // Input the maximum number of iterations
+    int n;
+    cout << "Enter the maximum number of iterations: ";
+    cin >> n;
+    n++;
+    // Define vectors to store iteration values
+    vector<long double> upper(n), lower(n), middle(n), error(n), function(n);
+    
+    // Initialize the first iteration
+    upper[0] = x_u;
+    lower[0] = x_l;
+    middle[0] = (x_u + x_l) / 2.0;
+    function[0] = f(middle[0]);
+    error[0] = 100.0; // Start with a large error to enter the loop
+
+    int i = 0;
+    int count = 1;
+
+    // Iterative process
+    while (i < n-1) {
+        middle[i] = (upper[i] + lower[i]) / 2.0;
+        function[i] = f(middle[i]);
+
+        if (f(lower[i]) * f(middle[i]) < 0) {
+            lower[i + 1] = lower[i];
+            upper[i + 1] = middle[i];
+        } else if (f(upper[i]) * f(middle[i]) < 0) {
+            upper[i + 1] = upper[i];
+            lower[i + 1] = middle[i];
+        } else {
+            break; // Root is found or close enough
+        }
+
+        i++;
+        count++;
+    }
+
+    for (int j = 1; j < count; j++) {
+        error[j] = fabs((middle[j] - middle[j - 1]) / middle[j]) * 100.0; // Percentage error
+        if (error[j] < e_s) {
+            count = j + 1;
+            break;
+        }
+    }
+
+    // Print the results
+    cout << "Iter\tLower Bound\tUpper Bound\tMiddle\t\tError\t\tFunction Value\n";
+    cout << fixed << setprecision(6);
+
+    for (int j = 0; j < count - 1; j++) {
+        cout << j + 1 << "\t" << lower[j] << "\t" << upper[j] << "\t" << middle[j] 
+             << "\t" << error[j] << "\t" << scientific << function[j] << endl;
+    }
+
+    return 0;
+}
