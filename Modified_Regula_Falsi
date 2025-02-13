@@ -1,0 +1,100 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+long double f(long double x)
+{
+    long double a = 2.0;
+    long double b = 0.0;
+    long double c = -2.5;
+    long double d = -5.0;
+    return a * pow(x, 3) + b * pow(x, 2) + c * x + d;
+}
+int main()
+{
+    long double x_u, x_l, e_s;
+    long double a, b;
+    // Input lower bound, upper bound, and error tolerance
+    cout << "Enter lower bound, upper bound, and error tolerance: ";
+    cin >> x_l >> x_u >> e_s;
+    // Input the maximum number of iterations
+    int n;
+    cout << "Enter the maximum number of iterations: ";
+    cin >> n;
+    // n++;
+    // Define vectors to store iteration values
+    vector<long double> upper(n), lower(n), regula_falsi(n), error(n), function(n);
+
+    // Initialize the first iteration
+    upper[0] = x_u;
+    lower[0] = x_l;
+    // Regula Falsi iteration
+    a = x_u;
+    b = x_l;
+    regula_falsi[0] = ((a * (f(b))/2) - (b *f(a))) / ((f(b))/2 -f(a));
+
+    function[0] = f(regula_falsi[0]);
+    error[0] = fabs(function[0]); // Start with a large error to enter the loop
+
+    int i = 0;
+    int count = 1;
+
+    // Iterative process
+    while (i < n - 1)
+    {
+        b = upper[i];
+        a = lower[i];
+        regula_falsi[i] = ((a * (f(b))/2) - (b *f(a))) / ((f(b))/2 -f(a));
+        function[i] = f(regula_falsi[i]);
+
+        if (f(lower[i]) * f(regula_falsi[i]) < 0)
+        {
+            lower[i + 1] = lower[i];
+            upper[i + 1] = regula_falsi[i];
+        }
+        else if (f(upper[i]) * f(regula_falsi[i]) < 0)
+        {
+            upper[i + 1] = upper[i];
+            lower[i + 1] = regula_falsi[i];
+        }
+        else
+        {
+            break; // Root is found or close enough
+        }
+
+        i++;
+        count++;
+    }
+    b = upper[n-1];
+    a = lower[n-1];
+    regula_falsi[n-1] = ((a * (f(b))/2) - (b *f(a))) / ((f(b))/2 -f(a));
+    function[n-1] = f(regula_falsi[n-1]);
+
+    // Iteration for epsilon calculation
+    for (int j = 1; j < count; j++)
+    {
+        // changed notation of error
+        error[j] = ((fabs(regula_falsi[j] - regula_falsi[j-1])) / regula_falsi[j]); // Percentage error
+        error[j] = error[j] *100;
+        if (error[j] < e_s)
+        {
+            count = j + 1;
+            break;
+        }
+    }
+
+    // Print the results
+    cout << "Iter\tLower Bound\tUpper Bound\tRegula Falsi\tError\t\tFunction Value\n";
+    cout << fixed << setprecision(8);
+
+    for (int j = 0; j < n && j<count; j++)
+    {
+        cout << j + 1 << "\t" << lower[j] << "\t" << upper[j] << "\t" << regula_falsi[j]
+             << "\t" << error[j] << "\t" << scientific << function[j] << endl;
+    }
+    cout << "The estimated value of a root is :" << regula_falsi[count-1] << endl;
+    return 0;
+}
