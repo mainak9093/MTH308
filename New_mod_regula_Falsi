@@ -1,0 +1,72 @@
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+
+using namespace std;
+
+// Define the function for which we are finding the root
+double f(double x) {
+    return x * x * x - 4 * x - 9;  // Example function f(x) = x^3 - 4x - 9
+}
+
+// Modified Regula Falsi Method Implementation
+void modifiedRegulaFalsi(double a, double b, double tol, int maxIter) {
+    if (f(a) * f(b) >= 0) {
+        cout << "Invalid interval: f(a) and f(b) must have opposite signs." << endl;
+        return;
+    }
+    
+    double F = f(a);
+    double G = f(b);
+    double w = a;
+    int iter = 0;
+    
+    cout << "-------------------------------------------------------------------------------------\n";
+    cout << " Iteration |    a_n     |    b_n     |    w_n     |   f(w_n)   |     F       |     G      \n";
+    cout << "-------------------------------------------------------------------------------------\n";
+    
+    while (iter < maxIter) {
+        iter++;
+        double w_next = (G * a - F * b) / (G - F);
+        
+        cout << fixed << setprecision(6);
+        cout << " " << setw(9) << iter << " | "
+             << setw(9) << a << " | "
+             << setw(9) << b << " | "
+             << setw(9) << w_next << " | "
+             << setw(9) << f(w_next) << " | "
+             << setw(9) << F << " | "
+             << setw(9) << G << endl;
+        
+        if (fabs(f(w_next)) < tol) {
+            cout << "-------------------------------------------------------------------------------------\n";
+            cout << "Root found at x = " << w_next << " after " << iter << " iterations." << endl;
+            return;
+        }
+        
+        if (f(w) * f(w_next) > 0) {
+            a = a;
+            b = w_next;
+            G = f(w_next);
+            if (f(w) * f(w_next) > 0) F /= 2;
+        } else {
+            a = w_next;
+            F = f(w_next);
+            if (f(w) * f(w_next) < 0) G /= 2;
+        }
+        w = w_next;
+    }
+    
+    cout << "-------------------------------------------------------------------------------------\n";
+    cout << "Maximum iterations reached. Approximate root: " << w << endl;
+}
+
+int main() {
+    double a = 2, b = 3;  // Initial interval
+    double tol = 1e-6;    // Tolerance for convergence
+    int maxIter = 20;     // Maximum iterations
+    
+    modifiedRegulaFalsi(a, b, tol, maxIter);
+    
+    return 0;
+}
