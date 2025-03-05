@@ -1,0 +1,119 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <iomanip>
+
+using namespace std;
+
+const double TOL = 1e-6;
+const int MAX_ITER = 100;
+
+// Define the system of nonlinear equations (Example: modify as needed)
+vector<double> F(const vector<double>& x) {
+    return {
+        x[0] * x[0] + x[1] * x[1] + x[2] * x[2] - 4,
+        x[0] * x[1] - x[2],
+        x[1] - x[2] * x[2] + x[0]
+    };
+}
+
+// Define the Jacobian matrix
+vector<vector<double>> J(const vector<double>& x) {
+    return {
+        {2 * x[0], 2 * x[1], 2 * x[2]},
+        {x[1], x[0], -1},
+        {1, -2 * x[2], 1}
+    };
+}
+
+// Function to compute the inverse of an n x n matrix using Gauss-Jordan elimination
+vector<vector<double>> inverseMatrix(vector<vector<double>> A) {
+    int n = A.size();
+    vector<vector<double>> I(n, vector<double>(n, 0));
+    for (int i = 0; i < n; i++)
+        I[i][i] = 1.0;
+
+    for (int i = 0; i < n; i++) {
+        int maxRow = i;
+        for (int k = i + 1; k < n; k++) {
+            if (fabs(A[k][i]) > fabs(A[maxRow][i]))
+                maxRow = k;
+        }
+        swap(A[i], A[maxRow]);
+        swap(I[i], I[maxRow]);
+
+        if (fabs(A[i][i]) < 1e-9) {
+            cerr << "Jacobian is singular and cannot be inverted." << endl;
+            exit(EXIT_FAILURE);
+        }
+
+        double pivot = A[i][i];
+        for (int j = 0; j < n; j++) {
+            A[i][j] /= pivot;
+            I[i][j] /= pivot;
+        }
+
+        for (int k = 0; k < n; k++) {
+            if (k != i) {
+                double factor = A[k][i];
+                for (int j = 0; j < n; j++) {
+                    A[k][j] -= factor * A[i][j];
+                    I[k][j] -= factor * I[i][j];
+                }
+            }
+        }
+    }
+    return I;
+}
+
+// Newton-Raphson method for solving nonlinear equations
+vector<double> newtonMethod(vector<double> x0) {
+    int n = x0.size();
+    cout << "Iteration";
+    for (int i = 0; i < n; i++) cout << "\t x[" << i << "]";
+    cout << endl;
+    
+    for (int iter = 0; iter < MAX_ITER; ++iter) {
+        vector<double> fx = F(x0);
+        vector<vector<double>> jacobian = J(x0);
+        vector<vector<double>> jacobianInv = inverseMatrix(jacobian);
+        
+        vector<double> dx(n, 0);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                dx[i] -= jacobianInv[i][j] * fx[j];
+            }
+        }
+        
+        for (int i = 0; i < n; ++i)
+            x0[i] += dx[i];
+        
+        double error = 0;
+        for (double d : dx)
+            error += d * d;
+        
+        cout << iter + 1;
+        for (double val : x0)
+            cout << "\t" << fixed << setprecision(6) << val;
+        cout << endl;
+
+        if (sqrt(error) < TOL) {
+            cout << "Converged in " << iter + 1 << " iterations." << endl;
+            return x0;
+        }
+    }
+    cout << "Did not converge within " << MAX_ITER << " iterations." << endl;
+    return x0;
+}
+
+int main() {
+    vector<double> x0 = {1.0, 1.0, 1.0}; // Initial guess for 3x3 system
+    vector<double> solution = newtonMethod(x0);
+    
+    cout << "Final Solution: ";
+    for (double val : solution) {
+        cout << val << " ";
+    }
+    cout << endl;
+    return 0;
+}
