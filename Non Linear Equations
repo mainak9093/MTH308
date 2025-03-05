@@ -1,0 +1,77 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const double TOL = 1e-6;
+const int MAX_ITER = 100;
+
+// Define the system of nonlinear equations
+vector<double> F(const vector<double>& x) {
+    return {x[0] * x[0] + x[1] * x[1] - 4, x[0] - x[1] * x[1]};
+}
+
+// Define the Jacobian matrix
+vector<vector<double>> J(const vector<double>& x) {
+    return {{2 * x[0], 2 * x[1]},
+            {1, -2 * x[1]}};
+}
+
+// Function to solve a linear system Ax = b using Gaussian elimination
+vector<double> solveLinearSystem(vector<vector<double>> A, vector<double> b) {
+    int n = A.size();
+    for (int i = 0; i < n; ++i) {
+        // Partial pivoting
+        int maxRow = i;
+        for (int k = i + 1; k < n; ++k)
+            if (fabs(A[k][i]) > fabs(A[maxRow][i]))
+                maxRow = k;
+        swap(A[i], A[maxRow]);
+        swap(b[i], b[maxRow]);
+        
+        // Forward elimination
+        for (int k = i + 1; k < n; ++k) {
+            double factor = A[k][i] / A[i][i];
+            for (int j = i; j < n; ++j)
+                A[k][j] -= factor * A[i][j];
+            b[k] -= factor * b[i];
+        }
+    }
+    
+    // Back substitution
+    vector<double> x(n);
+    for (int i = n - 1; i >= 0; --i) {
+        x[i] = b[i];
+        for (int j = i + 1; j < n; ++j)
+            x[i] -= A[i][j] * x[j];
+        x[i] /= A[i][i];
+    }
+    return x;
+}
+
+// Newton-Raphson method for solving nonlinear equations
+vector<double> newtonMethod(vector<double> x0) {
+    for (int iter = 0; iter < MAX_ITER; ++iter) {
+        vector<double> fx = F(x0);
+        vector<vector<double>> jacobian = J(x0);
+        vector<double> dx = solveLinearSystem(jacobian, fx);
+        
+        for (int i = 0; i < x0.size(); ++i)
+            x0[i] -= dx[i];
+        
+        double error = sqrt(dx[0] * dx[0] + dx[1] * dx[1]);
+        if (error < TOL) {
+            cout << "Converged in " << iter + 1 << " iterations." << endl;
+            return x0;
+        }
+    }
+    cout << "Did not converge within " << MAX_ITER << " iterations." << endl;
+    return x0;
+}
+
+int main() {
+    vector<double> x0 = {1.0, 1.0}; // Initial guess
+    vector<double> solution = newtonMethod(x0);
+    
+    cout << "Solution: x = " << solution[0] << ", y = " << solution[1] << endl;
+    return 0;
+}
