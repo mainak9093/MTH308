@@ -1,7 +1,4 @@
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <iomanip>
+#include<bits/stdc++.h>
 
 using namespace std;
 
@@ -49,16 +46,16 @@ vector<vector<double>> inverseMatrix(vector<vector<double>> A) {
 
         double pivot = A[i][i];
         for (int j = 0; j < n; j++) {
-            A[i][j] /= pivot;
-            I[i][j] /= pivot;
+            A[i][j] =A[i][j] /  pivot;
+            I[i][j] =I[i][j] / pivot;
         }
 
         for (int k = 0; k < n; k++) {
             if (k != i) {
                 double factor = A[k][i];
                 for (int j = 0; j < n; j++) {
-                    A[k][j] -= factor * A[i][j];
-                    I[k][j] -= factor * I[i][j];
+                    A[k][j] = A[k][j] -  factor * A[i][j];
+                    I[k][j] = I[k][j] -  factor * I[i][j];
                 }
             }
         }
@@ -67,52 +64,55 @@ vector<vector<double>> inverseMatrix(vector<vector<double>> A) {
 }
 
 // Newton-Raphson method for solving nonlinear equations
-vector<double> newtonMethod(vector<double> x0) {
-    int n = x0.size();
+vector<double> newtonMethod(vector<double> X) {
+    int n = X.size();
     cout << "Iteration";
     for (int i = 0; i < n; i++) cout << "\t x[" << i << "]";
     cout << endl;
     
     for (int iter = 0; iter < MAX_ITER; ++iter) {
-        vector<double> fx = F(x0);
-        vector<vector<double>> jacobian = J(x0);
+        vector<double> fx = F(X);
+        vector<vector<double>> jacobian = J(X);
         vector<vector<double>> jacobianInv = inverseMatrix(jacobian);
         
         vector<double> dx(n, 0);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                dx[i] -= jacobianInv[i][j] * fx[j];
+                dx[i] =  dx[i] - jacobianInv[i][j] * fx[j];
             }
         }
         
         for (int i = 0; i < n; ++i)
-            x0[i] += dx[i];
+        {
+            X[i] = X[i] +  dx[i];
+        }
+
         
         double error = 0;
-        for (double d : dx)
-            error += d * d;
-        
         cout << iter + 1;
-        for (double val : x0)
-            cout << "\t" << fixed << setprecision(6) << val;
+        for (int i=0;i<n;i++)
+        {
+            error = error +  dx[i] * dx[i];
+            cout << "\t" << fixed << setprecision(6) << X[i];
+        }     
         cout << endl;
 
         if (sqrt(error) < TOL) {
             cout << "Converged in " << iter + 1 << " iterations." << endl;
-            return x0;
+            return X;
         }
     }
     cout << "Did not converge within " << MAX_ITER << " iterations." << endl;
-    return x0;
+    return X;
 }
-
 int main() {
-    vector<double> x0 = {1.0, 1.0, 1.0}; // Initial guess for 3x3 system
-    vector<double> solution = newtonMethod(x0);
+    vector<double> X = {1.0, 1.0, 1.0}; // Initial guess for 3x3 system
+    vector<double> solution = newtonMethod(X);
+    int n = X.size();
     
     cout << "Final Solution: ";
-    for (double val : solution) {
-        cout << val << " ";
+    for (int i=0;i<n;i++) {
+        cout << solution[i] << " ";
     }
     cout << endl;
     return 0;
