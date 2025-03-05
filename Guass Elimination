@@ -1,30 +1,71 @@
-#include <stdio.h>
+#include <iostream>
+#include <vector>
+#include <iomanip>
+#include <cmath>
+#include <bits/stdc++.h>
+using namespace std;
+
+// Function to perform Gaussian Elimination
+vector<double> gaussianElimination(vector<vector<double>> &matrix, int n) {
+    // Forward elimination
+    for (int i = 0; i < n; i++) {
+        // Partial Pivoting: Find the maximum element in the current column
+        int maxRow = i;
+        for (int k = i + 1; k < n; k++) {
+            if (fabs(matrix[k][i]) > fabs(matrix[maxRow][i])) {
+                maxRow = k;
+            }
+        }
+        
+        // Swap the maximum row with the current row
+        swap(matrix[i], matrix[maxRow]);
+
+        // Make sure the diagonal element is non-zero
+        if (fabs(matrix[i][i]) < 1e-9) {
+            cerr << "Mathematical Error: Singular Matrix Detected!" << endl;
+            exit(EXIT_FAILURE);
+        }
+
+        // Convert to upper triangular form
+        for (int k = i + 1; k < n; k++) {
+            double factor = matrix[k][i] / matrix[i][i];
+            for (int j = i; j <= n; j++) {
+                matrix[k][j] -= factor * matrix[i][j];
+            }
+        }
+    }
+
+    // Back substitution
+    vector<double> solution(n);
+    for (int i = n - 1; i >= 0; i--) {
+        solution[i] = matrix[i][n] / matrix[i][i];
+        for (int j = i - 1; j >= 0; j--) {
+            matrix[j][n] -= matrix[j][i] * solution[i];
+        }
+    }
+    return solution;
+}
 
 int main() {
-    float epsilon = 1.0f; // Start with epsilon = 1
-    float one = 1.0f;
-
-    // Iteratively halve epsilon until 1 + epsilon equals 1
-    while ((one + epsilon) != one) {
-        epsilon /= 2.0f;
+    int n;
+    cout << "Enter the number of equations (n): ";
+    cin >> n;
+    
+    vector<vector<double>> matrix(n, vector<double>(n + 1));
+    cout << "Enter the augmented matrix (including RHS values):\n";
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j <= n; j++) {
+            cin >> matrix[i][j];
+        }
     }
-
-    // The loop exits when epsilon becomes too small to affect 1. Add one more halving.
-    epsilon *= 2.0f;
-
-    printf("Machine Epsilon for float: %e\n", epsilon);
-
-    // Double precision
-    double epsilon_double = 1.0;
-    double one_double = 1.0;
-    int count =0;
-    while ((one_double + epsilon_double) != one_double) {
-        epsilon_double /= 10.0;
-        count ++;
+    
+    vector<double> solution = gaussianElimination(matrix, n);
+    
+    // Output the solution
+    cout << "Solution:\n";
+    for (int i = 0; i < n; i++) {
+        cout << "x" << i + 1 << " = " << fixed << setprecision(6) << solution[i] << endl;
     }
-    epsilon_double *= 10.0;
-
-    printf("Machine Epsilon for double: %e\n", epsilon_double);
-    printf("%d",count);
+    
     return 0;
 }
