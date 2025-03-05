@@ -1,0 +1,80 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+
+using namespace std;
+
+// Function to compute the inverse of an n x n matrix using Gauss-Jordan elimination
+vector<vector<double>> inverseMatrix(vector<vector<double>> A) {
+    int n = A.size();
+    vector<vector<double>> I(n, vector<double>(n, 0));
+
+    // Initialize identity matrix
+    for (int i = 0; i < n; i++)
+        I[i][i] = 1.0;
+
+    // Perform row operations to transform A into an identity matrix
+    for (int i = 0; i < n; i++) {
+        // Partial pivoting: Find the row with the maximum element in column i
+        int maxRow = i;
+        for (int k = i + 1; k < n; k++) {
+            if (fabs(A[k][i]) > fabs(A[maxRow][i]))
+                maxRow = k;
+        }
+        swap(A[i], A[maxRow]);
+        swap(I[i], I[maxRow]);
+
+        // Check if matrix is singular (det(A) = 0)
+        if (fabs(A[i][i]) < 1e-9) {
+            cerr << "Matrix is singular and cannot be inverted." << endl;
+            exit(EXIT_FAILURE);
+        }
+
+        // Normalize the pivot row
+        double pivot = A[i][i];
+        for (int j = 0; j < n; j++) {
+            A[i][j] /= pivot;
+            I[i][j] /= pivot;
+        }
+
+        // Eliminate other rows
+        for (int k = 0; k < n; k++) {
+            if (k != i) {
+                double factor = A[k][i];
+                for (int j = 0; j < n; j++) {
+                    A[k][j] -= factor * A[i][j];
+                    I[k][j] -= factor * I[i][j];
+                }
+            }
+        }
+    }
+    return I;
+}
+
+// Function to print a matrix
+void printMatrix(const vector<vector<double>>& M) {
+    for (const auto& row : M) {
+        for (double val : row) {
+            cout << val << " ";
+        }
+        cout << endl;
+    }
+}
+
+int main() {
+    vector<vector<double>> A = {
+        {2, 1, 1},
+        {1, 3, 2},
+        {1, 0, 0}
+    };
+
+    cout << "Original Matrix:" << endl;
+    printMatrix(A);
+
+    vector<vector<double>> A_inv = inverseMatrix(A);
+
+    cout << "\nInverse Matrix:" << endl;
+    printMatrix(A_inv);
+
+    return 0;
+}
