@@ -1,0 +1,70 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+void luDecomposition(vector<vector<double>> &A, vector<vector<double>> &L, vector<vector<double>> &U, int n) {
+    for (int i = 0; i < n; i++) {
+        // Upper Triangular
+        for (int k = i; k < n; k++) {
+            double sum = 0;
+            for (int j = 0; j < i; j++)
+                sum += (L[i][j] * U[j][k]);
+            U[i][k] = A[i][k] - sum;
+        }
+
+        // Check for zero pivot element (singular matrix)
+        if (U[i][i] == 0) {
+            cout << "Warning: Zero pivot encountered at position " << i << ", matrix is singular or nearly singular." << endl;
+            // Continue decomposition despite singularity
+        }
+
+        // Lower Triangular
+        for (int k = i; k < n; k++) {
+            if (i == k)
+                L[i][i] = 1; // Diagonal as 1
+            else {
+                double sum = 0;
+                for (int j = 0; j < i; j++)
+                    sum += (L[k][j] * U[j][i]);
+                if(U[i][i] != 0)
+                    L[k][i] = (A[k][i] - sum) / U[i][i];
+                else
+                    L[k][i] = 0; // Handle division by zero due to singularity
+            }
+        }
+    }
+}
+
+void printMatrix(const vector<vector<double>> &mat, int n) {
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++)
+            cout << setw(8) << setprecision(4) << mat[i][j] << " ";
+        cout << endl;
+    }
+}
+
+int main() {
+    int n;
+    cout << "Enter dimension of square matrix: ";
+    cin >> n;
+
+    vector<vector<double>> A(n, vector<double>(n));
+    vector<vector<double>> L(n, vector<double>(n, 0));
+    vector<vector<double>> U(n, vector<double>(n, 0));
+
+    cout << "Enter elements of matrix A:" << endl;
+    for(int i=0;i<n;i++)
+        for(int j=0;j<n;j++)
+            cin >> A[i][j];
+
+    luDecomposition(A, L, U, n);
+
+    cout << "\nLower Triangular Matrix L:" << endl;
+    printMatrix(L, n);
+
+    cout << "\nUpper Triangular Matrix U:" << endl;
+    printMatrix(U, n);
+
+    return 0;
+}
+
