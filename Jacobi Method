@@ -1,0 +1,54 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+
+using namespace std;
+
+const double TOLERANCE = 1e-6; // Convergence tolerance
+const int MAX_ITER = 100;      // Maximum number of iterations
+
+// Function to perform the Jacobi Method
+vector<double> jacobiMethod(const vector<vector<double>>& A, const vector<double>& b) {
+    int n = A.size();
+    vector<double> x(n, 0.0);    // Initial guess (zero vector)
+    vector<double> x_new(n, 0.0);
+
+    for (int iter = 0; iter < MAX_ITER; iter++) {
+        for (int i = 0; i < n; i++) {
+            double sum = 0.0;
+            for (int j = 0; j < n; j++) {
+                if (i != j)
+                    sum += A[i][j] * x[j];
+            }
+            x_new[i] = (b[i] - sum) / A[i][i];  // Jacobi formula
+        }
+
+        // Check for convergence
+        double error = 0.0;
+        for (int i = 0; i < n; i++)
+            error += abs(x_new[i] - x[i]);
+
+        if (error < TOLERANCE)
+            break;
+
+        x = x_new; // Update solution
+    }
+
+    return x;
+}
+
+int main() {
+    // Example system: 3x + y = 9, x + 2y = 8
+    vector<vector<double>> A = {{-5,2,3}, {-3,9,1},{2,-1,-7}};
+    vector<double> b = {1,2,3};
+
+    vector<double> solution = jacobiMethod(A, b);
+
+    cout << "Solution:" << endl;
+    for (double val : solution) {
+        cout << val << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
