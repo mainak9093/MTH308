@@ -1,0 +1,54 @@
+
+% Define function
+f = @(x) x.^3;
+
+% Interval [a, b] and number of subintervals
+a = 1;
+b = 2;
+n = 40;
+
+% Step size
+h = (b - a) / n;
+
+% Initialize sum
+sum = f(a) + f(b);
+
+% Loop through internal points
+for i = 1:n-1
+    x = a + i * h;
+    sum = sum + 2 * f(x);
+end
+
+% Final approximation
+integral_approx = (h / 2) * sum;
+
+% Display result
+fprintf('Approximate integral of x^3 from %.1f to %.1f is %.10f\n', a, b, integral_approx);
+
+
+
+
+
+f = @(x) x.^3;
+a = 1; b = 2; n = 4;
+h = (b - a) / n;
+x = a:h:b;
+y = f(x);
+I = (h/2) * (y(1) + 2*sum(y(2:end-1)) + y(end));
+fprintf('Integral of x^3 from 1 to 2 = %.6f\n', I);
+
+
+
+
+
+f = @(x) exp(-x).*sin(x);
+a = 0; b = 3; n = 100;
+h = (b - a) / n;
+x = a:h:b;
+y = f(x);
+I = (h/2) * (y(1) + 2*sum(y(2:end-1)) + y(end));
+fprintf('Integral of e^{-x}sin(x) from 0 to 3 = %.6f\n', I);
+
+
+
+
