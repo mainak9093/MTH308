@@ -152,7 +152,9 @@ This project is intended for educational purposes as part of the MTH308 coursewo
 Prof. B. V. Ratish Kumar for his guidance and insightful lectures during the MTH308 Numerical Analysis and Scientific Computing course.
 
 The following foundational texts for their comprehensive coverage of numerical methods:
+- Numerical Methods for Engineers by Steven C. Chapra and Raymond P. Canale
+- Numerical Analysis by Richard L. Burden and J. Douglas Faires
+- An Introduction to Numerical Analysis by Kendall E. Atkinson
 
-Numerical Methods for Engineers by Steven C. Chapra and Raymond P. Canale
-Numerical Analysis by Richard L. Burden and J. Douglas Faires
-An Introduction to Numerical Analysis by Kendall E. Atkinson
+
+
