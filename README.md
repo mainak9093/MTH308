@@ -149,17 +149,10 @@ This collection was developed as part of the MTH308 course, covering:
 This project is intended for educational purposes as part of the MTH308 coursework.
 
 ## Acknowledgments
+Prof. B. V. Ratish Kumar for his guidance and insightful lectures during the MTH308 Numerical Analysis and Scientific Computing course.
 
-The implementations follow standard numerical analysis algorithms as presented in computational mathematics literature, with optimizations for clarity and educational value.
+The following foundational texts for their comprehensive coverage of numerical methods:
 
-[1] https://github.com/mainak9093/MTH308
-[2] https://github.com/mainak9093/MTH308/blob/main/Newton_Raphson
-[3] https://github.com/mainak9093/MTH308/blob/main/LU%20Decomposition
-[4] https://github.com/mainak9093/MTH308/blob/main/Range%20Kutta
-[5] https://github.com/mainak9093/MTH308/blob/main/Guass%20Elimination
-[6] https://github.com/mainak9093/MTH308/blob/main/Jacobi%20Method
-[7] https://pplx-res.cloudinary.com/image/private/user_uploads/51696224/fadf2cf7-a2fa-4436-902d-09564e455e30/image.jpg
-[8] https://github.com/mainak9093/MTH308......write
-[9] https://github.com/mainak9093/MTH308/blob/main/Matrix%20Inversion
-[10] https://github.com/mainak9093/MTH308/blob/main/Gauss%20Siedel
-[11] https://github.com/mainak9093/MTH308/blob/main/Composite%20Trapezoidal%20Rule
+Numerical Methods for Engineers by Steven C. Chapra and Raymond P. Canale
+Numerical Analysis by Richard L. Burden and J. Douglas Faires
+An Introduction to Numerical Analysis by Kendall E. Atkinson
